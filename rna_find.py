@@ -78,9 +78,16 @@ for project, codes in req_data.items():
     # founded = rna_db.loc[rna_db[target_field].isin(codes)]
 
     # новый способ - проверяет вхождение с начала
-    founded = pd.DataFrame()
-    for code in codes:
-        founded = pd.concat([rna_db.loc[rna_db[target_field].str.startswith(code)], founded])
+    # founded = pd.DataFrame()
+    # for code in codes:
+    #     founded = pd.concat([rna_db.loc[rna_db[target_field].str.startswith(code)], founded])
+
+    # и еще способ - по маске
+    # apply the mask and generate vector
+    mask = rna_db[target_field].apply(lambda value: any([bool(re.match(code, value)) for code in codes]))
+    # get values by generated mask
+    founded = rna_db[mask]
+    print(founded)
 
     writer = pd.ExcelWriter(req_folder / (project + '.xlsx'), engine='openpyxl')
     founded[headers].to_excel(writer, 'RNA request')
