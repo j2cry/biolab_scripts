@@ -74,15 +74,6 @@ if len(headers) < len(fields):
 
 # find samples and write result files
 for project, codes in req_data.items():
-    # старый способ - проверяет только абсолютное совпадение
-    # founded = rna_db.loc[rna_db[target_field].isin(codes)]
-
-    # новый способ - проверяет вхождение с начала
-    # founded = pd.DataFrame()
-    # for code in codes:
-    #     founded = pd.concat([rna_db.loc[rna_db[target_field].str.startswith(code)], founded])
-
-    # и еще способ - по маске
     # apply the mask and generate vector
     mask = rna_db[target_field].apply(lambda value: any([bool(re.match(code, value)) for code in codes]))
     # get values by generated mask
