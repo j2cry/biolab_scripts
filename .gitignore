@@ -3,5 +3,7 @@ venv/
 __pycache__/
 materials/
 
-/covid.xlsx
-/cvreq.txt
+/cvd_info/covid.xlsx
+/cvd_info/cvreq.txt
+/current_material/test.xlsx
+/rna_statistics/dataset.csv
