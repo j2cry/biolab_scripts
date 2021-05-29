@@ -4,11 +4,82 @@ import hashlib
 import pandas as pd
 
 headers = ['Full name', 'Birthday', 'Direction type', 'Received date', 'Sample type', 'Result']
-exl_filename = 'covid.xlsx'
-exl_sheet_name = 'COVID-19 INFO'
+EXCEL_FILE = 'covid.xlsx'
+EXCEL_SHEET = 'COVID-19 INFO'
 
 PatientName = namedtuple('PatientName', 'surname name patronymic', defaults=('', '', ''))
 AnalysisResult = namedtuple('AnalysisResult', 'date direction type result')
+
+URL_LOG = 'https://materials.mosmedzdrav.ru/api/auth/login'
+URL_TABLE = 'https://materials.mosmedzdrav.ru/api/main/getTable'
+
+USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'
+# host = 'materials.mosmedzdrav.ru'
+# origin = 'https://materials.mosmedzdrav.ru'
+REFERER = 'https://materials.mosmedzdrav.ru/corona/auth/'
+
+LOGIN = 'type your login here'              # LOGIN
+PASSWD = 'type your password here'        # PASSWORD
+
+REQUEST_HEADER = {
+    # 'Accept': '*/*',
+    # 'Accept-Encoding': 'gzip, deflate, br',
+    # 'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+    # 'Authorization': 'Bearer',
+    # 'Connection': 'keep-alive',
+    # 'Content-Length': 26 + len(login) + len(password),     # 26 + len(login) + len(password)
+    # 'Content-Type': 'application/json',
+    # 'Cookie': 'cookie',
+    # 'Host': host,
+    # 'Origin': origin,
+    'Referer': REFERER,
+    # 'sec-ch-ua': '"Chromium";v="88", "Google Chrome";v="88", ";Not A Brand";v="99" ',
+    # 'sec-ch-ua-mobile': '?0',
+    # 'Sec-Fetch-Dest': 'empty',
+    # 'Sec-Fetch-Mode': 'cors',
+    # 'Sec-Fetch-Site': 'same-origin',
+    'User-Agent': USER_AGENT,
+}
+
+REQUEST_AUTH = {
+    'login': LOGIN,
+    'password': PASSWD
+}
+
+REQUEST_DATA = {
+    "all_mo": None,
+    "birth_dt": "",
+    "direction_number": "",
+    "direction_status_id": -1,
+    "get_date_at": "",
+    "is_lab_number": False,
+    "is_view_not_approve": False,
+    "is_wait_approve": False,
+    "laboratory_id": -1,
+    "limit": 10,
+    "mu_id": 1109,
+    "name": "",                     # ИМЯ
+    "offset": 0,
+    "patronymic": "",               # ОТЧЕСТВО
+    "receive_date_at": "",
+    "result_date_at": "",
+    "samples_result_id": -1,
+    "samples_status_id": -1,
+    "send_date_at": "",
+    "send_laboratory_id": -1,
+    "spec_samples_number": "",
+    "surname": "",                  # ФАМИЛИЯ
+    "direction_type_id": -1,
+    "source_id": -1,
+    "employer_id": None,
+    "direction_category_id": -1,
+    "symptom_orvi": None,
+    "is_deleted": False,
+    "is_mo_reestr_create": False,
+    "is_ref_reestr": False,
+    "mkb_id": -1,
+    "min_direction_id": None
+}
 
 
 class PatientsInfo:
@@ -85,10 +156,10 @@ class PatientsInfo:
         for pat in self.data.values():
             res_df = res_df.append(pd.DataFrame(pat))
 
-        writer = pd.ExcelWriter(exl_filename, engine='openpyxl')
-        res_df[headers].to_excel(writer, exl_sheet_name, index=False)
+        writer = pd.ExcelWriter(EXCEL_FILE, engine='openpyxl')
+        res_df[headers].to_excel(writer, EXCEL_SHEET, index=False)
 
-        worksheet = writer.sheets[exl_sheet_name]  # pull worksheet object
+        worksheet = writer.sheets[EXCEL_SHEET]  # pull worksheet object
         dims = {}
         for row in worksheet.rows:
             for cell in row:
