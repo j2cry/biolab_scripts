@@ -2,7 +2,8 @@ import sys
 import os
 from PyQt5 import QtWidgets, uic
 import requests
-
+import platform
+import subprocess
 from cvd_parse import URL_LOG, URL_TABLE, REQUEST_HEADER, REQUEST_AUTH, REQUEST_DATA, EXCEL_FILE,\
     PatientsInfo, PatientName
 
@@ -13,9 +14,9 @@ class CvdGui(QtWidgets.QMainWindow):
         uic.loadUi('mainform.ui', self)
 
         self.statusBar = self.findChild(QtWidgets.QStatusBar, 'statusBar')
-        self.request_button = self.findChild(QtWidgets.QPushButton, 'requestButton')
+        self.requestButton = self.findChild(QtWidgets.QPushButton, 'requestButton')
 
-        self.request_button.clicked.connect(self.request)
+        self.requestButton.clicked.connect(self.request)
         self.show()
 
     def request(self):
@@ -57,7 +58,12 @@ class CvdGui(QtWidgets.QMainWindow):
                 info.update(elem)
 
         info.make_frame()
-        os.system(f'start {EXCEL_FILE}')
+        if platform.system() == 'Windows':
+            os.system(f'start {EXCEL_FILE}')
+        elif platform.system() == 'Linux':
+            subprocess.call(['xdg-open', EXCEL_FILE])
+        else:
+            self.statusBar.showMessage('Auto-open is supported only on Windows or Linux platform.')
 
 
 app = QtWidgets.QApplication(sys.argv)
