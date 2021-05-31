@@ -35,7 +35,7 @@ class RnaFindGui(QtWidgets.QMainWindow):
 
     def search(self):
         # SCRIPT PARAMETERS
-        # sheet_name = 'RNA DATABASE'
+        SHEET_NAME = 'RNA DATABASE'
         fields = ['!Код', 'Date', 'Comment']
         RESULT_FILE = 'rna_search_result.xlsx'
 
@@ -53,7 +53,7 @@ class RnaFindGui(QtWidgets.QMainWindow):
         req_data = self.codesEdit.toPlainText().split('\n')
 
         # reading data from excel as DataFrame
-        rna_db = pd.read_excel(self.dbFile.text())
+        rna_db = pd.read_excel(self.dbFile.text(), SHEET_NAME)
 
         # find fields in dataframe
         headers = set(rna_db.columns) & set(fields)
@@ -70,9 +70,7 @@ class RnaFindGui(QtWidgets.QMainWindow):
         founded = rna_db[mask]
         # print(founded)
 
-        writer = pd.ExcelWriter(RESULT_FILE, engine='openpyxl')
-        founded[headers].to_excel(writer, 'RNA request', index=False)
-        writer.save()
+        founded[headers].to_excel(RESULT_FILE, 'RNA request', index=False)
 
         # webbrowser.open_new_tab(RESULT_FILE)
         if platform.system() == 'Windows':
@@ -87,5 +85,3 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     ui = RnaFindGui()
     app.exec_()
-
-

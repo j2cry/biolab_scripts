@@ -3,6 +3,7 @@ import os
 from PyQt5 import QtWidgets, uic
 from pathlib import Path
 import jaydebeapi
+from datetime import datetime
 
 PATH_CWD = Path().cwd()
 PATH_UI = Path(PATH_CWD, 'ui', 'mainform.ui')
@@ -24,6 +25,7 @@ class AppGui(QtWidgets.QMainWindow):
                                            f"jdbc:ucanaccess://{PATH_MDB};memory=false;",
                                            ["", ""], driver_jars)
         self.mdb = self.mdb_conn.cursor()
+        self.statusbar = self.findChild(QtWidgets.QStatusBar, 'statusbar')
         # bind events
         self.requestButton.clicked.connect(self.request)
 
@@ -42,6 +44,7 @@ class AppGui(QtWidgets.QMainWindow):
             else:
                 response.append(f'{row}')
         self.requestEdit.setText('\n'.join(response))
+        self.statusbar.showMessage(f"Finished at {datetime.now()}")
 
     def closeEvent(self, event):
         self.mdb.close()

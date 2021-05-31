@@ -86,6 +86,10 @@ class PatientsInfo:
     def __init__(self):
         self.data = defaultdict()
 
+    @property
+    def has_data(self):
+        return len(self.data.items()) != 0
+
     @staticmethod
     def parse(pat):
         """ Response parsing. Returns dict needed data from pat.

@@ -57,13 +57,16 @@ class CvdGui(QtWidgets.QMainWindow):
             for elem in response:
                 info.update(elem)
 
-        info.make_frame()
-        if platform.system() == 'Windows':
-            os.system(f'start {EXCEL_FILE}')
-        elif platform.system() == 'Linux':
-            subprocess.call(['xdg-open', EXCEL_FILE])
+        if info.has_data:
+            info.make_frame()
+            if platform.system() == 'Windows':
+                os.system(f'start {EXCEL_FILE}')
+            elif platform.system() == 'Linux':
+                subprocess.call(['xdg-open', EXCEL_FILE])
+            else:
+                self.statusBar.showMessage('Auto-open is supported only on Windows or Linux platform.')
         else:
-            self.statusBar.showMessage('Auto-open is supported only on Windows or Linux platform.')
+            self.statusBar.showMessage('Nothing found!')
 
 
 app = QtWidgets.QApplication(sys.argv)
