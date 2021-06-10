@@ -5,6 +5,10 @@ import seaborn as sns
 
 dataset = pd.read_csv('dataset.csv', index_col=None, sep=';', encoding='utf-8')
 
+# for num, elem in enumerate(dataset['provider'].unique(), 1):
+#     print(f"'{elem}': {num},")
+# exit('finish')
+
 plt.rc('xtick', labelsize=8)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=8)    # fontsize of the tick labels
 

@@ -3,8 +3,10 @@ import pandas as pd
 import pathlib
 import os
 import re
+from depersonalize import depersonalize_provider
 
-DATA_PATH = r'\\DC1-MOSCOW\Proteogenex\Working\qc complete'
+DATA_PATH = r'path to folder with excel files'
+EXCLUDE_FILES = ['RNA database.xls', 'rna_search_result.xlsx']
 estimates = {8: 5, 7: 4, 5: 3, 3: 2}
 
 
@@ -33,9 +35,17 @@ def repair_estimate(rin):
     return 0
 
 
+def get_loc(code):
+    try:
+        return int(str(code)[:2])
+    except ValueError:
+        return 0
+
+
 excel_files = [str(pathlib.Path(path).joinpath(file))
                for path, sub_dirs, files in os.walk(DATA_PATH)
-               for file in files if file.endswith('xls') or file.endswith('xlsx')]
+               for file in files
+               if (file.endswith('xls') or file.endswith('xlsx')) and file not in EXCLUDE_FILES]
 
 # print(*excel_files, sep='\n')
 print(f'Total {len(excel_files)} files found.')
@@ -76,7 +86,7 @@ dataset.rename(columns={'Оценка': 'estimate', 'Код': 'code', 'Пост�
                inplace=True)
 
 # drop non-valid rows
-out_estimate = dataset['estimate'].isna() # | (dataset['estimate'] == 0)
+out_estimate = dataset['estimate'].isna()  # | (dataset['estimate'] == 0)
 out_rin = dataset['RIN'].isna()
 out_code = dataset['code'].isna()
 dataset.drop(dataset[out_code | (out_estimate & out_rin)].index, inplace=True)
@@ -86,10 +96,13 @@ out_estimate = dataset['estimate'].isna()
 dataset.loc[out_estimate, 'estimate'] = dataset.loc[out_estimate, 'RIN'].apply(repair_estimate)
 
 # add localization column
-dataset['loc'] = dataset['code'].apply(lambda x: str(x)[:2])
+dataset['loc'] = dataset['code'].apply(get_loc)
+
+# replace provider
+dataset['provider'].replace(depersonalize_provider, inplace=True)
 
 print('Saving collected dataset...', end='')
 # For excel
 # dataset.to_csv('dataset.csv', sep=';', encoding='utf-8-sig')
-dataset.to_csv('dataset.csv', sep=';', index=False, encoding='utf-8-sig')
+dataset.to_csv('rna_dataset_depersonalized.csv', index=False, encoding='utf-8-sig')
 print('done.')

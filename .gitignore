@@ -9,3 +9,4 @@ materials/
 /rna_statistics/dataset.csv
 /rna_find/test.xlsx
 /rna_find/rna_search_result.xlsx
+/rna_statistics/depersonalize.py
